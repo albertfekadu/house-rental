@@ -73,6 +73,23 @@ def home():
     listings = HouseListing.query.paginate(page=page, per_page=LISTINGS_PER_PAGE)
     return render_template('index.html', listings=listings)
 
+@app.route("/admin_dashboard", methods=['GET'])
+@login_required
+def admin_dashboard():
+    if not current_user.is_authenticated:
+        flash('Please log in to access the admin dashboard.', 'error')
+        return redirect(url_for('login'))
+
+    # Fetch necessary data for the dashboard
+    active_listings = HouseListing.query.count()
+    revenue = db.session.query(db.func.sum(HouseListing.price)).scalar() or 0.0
+    search_trends = []  # Assuming you have a model to track search trends
+
+    return render_template('admin_dashboard.html', 
+                           active_listings=active_listings, 
+                           revenue=revenue, 
+                           search_trends=search_trends)
+
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query', '', type=str)
