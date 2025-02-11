@@ -76,6 +76,16 @@
             return confirm('Are you sure you want to logout?');
         }
     </script>
+    <script>
+        // Gets filter values from query param and populates field on page load
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query');
+        const minPrice = urlParams.get('min_price');
+        const maxPrice = urlParams.get('max_price');
+        document.querySelector('input[name="query"]').value = query;
+        document.querySelector('input[name="min_price"]').value = minPrice;
+        document.querySelector('input[name="max_price"]').value = maxPrice;
+    </script>
 </body>
 </html>
 
