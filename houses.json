@@ -1,0 +1,28 @@
+[
+  {
+    "price": 2500.0,
+    "rooms": 2,
+    "location": "ayat",
+    "description": "garden"
+  },
+  {
+    "price": 2500.0,
+    "rooms": 2,
+    "location": "BOLE",
+    "description": "wifi"
+  },
+  {
+    "price": 2000.0,
+    "rooms": 1,
+    "location": "bole",
+    "description": "wifi,parking"
+  },
+  {
+    "price": 2000.0,
+    "rooms": 1,
+    "location": "bole",
+    "description": "wifi",
+    "picture": "",
+    "contact": "232"
+  }
+]

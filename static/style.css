@@ -1,0 +1,73 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff; /* Light blue background */
+  color: #333;
+}
+
+.navbar {
+  margin-bottom: 20px;
+  background-color: #ffffff !important; /* White navbar */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  color: #1e90ff !important; /* Dodger blue */
+  font-weight: bold;
+}
+
+.nav-link {
+  color: #1e90ff !important;
+}
+
+.nav-link:hover {
+  color: #007bff !important;
+}
+
+.btn-primary {
+  background-color: #1e90ff;
+  border-color: #1e90ff;
+}
+
+.btn-primary:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  color: #1e90ff;
+}
+
+.house-listing {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.house-listing p {
+  margin-bottom: 10px;
+}
+
+.house-listing img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
