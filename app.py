@@ -89,8 +89,8 @@ def admin_dashboard():
         return redirect(url_for('login'))
 
     # Fetch necessary data for the dashboard
-    active_listings = HouseListing.query.count()
-    revenue = db.session.query(db.func.sum(HouseListing.price)).scalar() or 0.0
+    active_listings = HouseListing.query.filter(HouseListing.payDate != None).count()
+    revenue = active_listings * 500  # Assuming each listing costs 500 birr
     search_trends = []  # Assuming you have a model to track search trends
     unapproved_listings = HouseListing.query.filter(HouseListing.payDate.is_(None)).all()
     
