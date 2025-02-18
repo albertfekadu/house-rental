@@ -1,19 +1,37 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ house.title }}</h1>
-<div class="house-listing">
-    <p><strong>Price:</strong> ${{ house.price }}</p>
-    <p><strong>Location:</strong> {{ house.location }}</p>
-    <p><strong>Number of Rooms:</strong> {{ house.number_of_rooms }}</p>
-    <p><strong>Amenities:</strong> {{ house.amenities }}</p>
-    <p><strong>Contact:</strong> {{ house.contact }}</p>
-    {% if house.image_url %}
-        <img src="{{ house.image_url }}" alt="House Image" style="max-width: 300px;">
-    {% endif %}
-    <a href="{{ url_for('add_to_wishlist', listing_id=house.id) }}" class="btn btn-outline-info">
-        <i class="far fa-heart"></i> Wishlist
-    </a>
-</div>
+  <h1>{{ house.title }}</h1>
+  <div class="house-listing">
+    <div class="d-flex gallery">
+      {% for image in house.images %}
+        <div class="gallery-item">
+          <img src="/{{ image.filename }}" alt="House Image" class="gallery-image border" />
+          <a href="/{{ image.filename }}" alt="House Image" target="_blank">Open Image</a>
+        </div>
+      {% endfor %}
+    </div>
+    <p>
+      <strong>Price:</strong> ${{ house.price }}
+    </p>
+    <p>
+      <strong>Location:</strong> {{ house.location }}
+    </p>
+    <p>
+      <strong>Number of Rooms:</strong> {{ house.number_of_rooms }}
+    </p>
+    <p>
+      <strong>Amenities:</strong> {{ house.amenities }}
+    </p>
+    <p>
+      <strong>Contact:</strong> {{ house.contact }}
+    </p>
+    <a href="{{ url_for('add_to_wishlist', listing_id=house.id) }}" class="btn btn-outline-info"><i class="far fa-heart"></i> Wishlist</a>
+    <form method="DELETE" action="{{ url_for('delete_listing', listing_id=house.id) }}" style="display: inline-block;">
+      <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this listing?')">Delete</button>
+    </form>
+    <a href="{{ url_for('edit_listing', id=house.id) }}" class="btn btn-primary">Edit</a>
+    <iframe class="mt-4" width="100%" height="450" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key=API_KEY
+    &q={{ house.location }}"></iframe>
+  </div>
 {% endblock %}
-
