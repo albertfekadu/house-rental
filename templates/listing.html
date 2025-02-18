@@ -19,6 +19,11 @@
     <a href="{{ url_for('add_to_wishlist', listing_id=house.id) }}" class="btn btn-outline-info">
         <i class="far fa-heart"></i> Wishlist
     </a>
+    <form method="DELETE" action="{{ url_for('delete_listing', listing_id=house.id) }}" style="display: inline-block;">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this listing?')">
+            Delete
+        </button>
+    </form>
 </div>
 {% endblock %}
 

@@ -209,6 +209,63 @@ def add_listing():
         return redirect(url_for('home'))
     return render_template('add_listing.html')
 
+@app.route('/edit_listing/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_listing(id):
+    listing = HouseListing.query.get_or_404(id)
+    if listing.user_id != current_user.id:
+        flash('You are not authorized to edit this listing.', 'error')
+        return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        listing.title = request.form.get('title')
+        listing.price = request.form.get('price')
+        listing.location = request.form.get('location')
+        listing.number_of_rooms = request.form.get('number_of_rooms')
+        listing.amenities = request.form.get('amenities')
+        listing.contact = request.form.get('contact')
+
+        # Handle image upload
+        images = request.files.getlist('images')
+        image_urls = []
+
+        for file in images:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_urls.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        for image_url in image_urls:
+            image = Image(filename=image_url, house_listing=listing)
+            db.session.add(image)
+
+        db.session.commit()
+        flash('Listing updated successfully!', 'success')
+        return redirect(url_for('home'))
+    return render_template('edit_listing.html', listing=listing)
+
+@app.route('/delete_listing/<int:listing_id>')
+@login_required
+def delete_listing(listing_id):
+    listing = HouseListing.query.get_or_404(listing_id)
+    if listing.user_id != current_user.id:
+        flash('You are not authorized to delete this listing.', 'error')
+        return redirect(url_for('home'))
+    
+    # Delete images associated with the listing
+    for image in listing.images:
+        try:
+            os.remove(image.filename)
+        except OSError as e:
+            flash(f"Error deleting image file: {e}", 'error')
+        db.session.delete(image)
+        
+    db.session.delete(listing)
+    db.session.commit()
+    flash('Listing deleted successfully!', 'success')
+    return redirect(url_for('home'))
+
+
 @app.route('/add_to_wishlist/<int:listing_id>')
 @login_required
 def add_to_wishlist(listing_id):
