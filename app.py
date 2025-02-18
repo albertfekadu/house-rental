@@ -71,6 +71,11 @@ class Wishlist(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     listing_id = db.Column(db.Integer, db.ForeignKey('house_listing.id'), nullable=False)
 
+class SearchTrend(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    query = db.Column(db.String(100), nullable=False)
+    count = db.Column(db.Integer, nullable=False)
+    
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -91,8 +96,8 @@ def admin_dashboard():
     # Fetch necessary data for the dashboard
     active_listings = HouseListing.query.filter(HouseListing.payDate != None).count()
     revenue = active_listings * 500  # Assuming each listing costs 500 birr
-    search_trends = []  # Assuming you have a model to track search trends
     unapproved_listings = HouseListing.query.filter(HouseListing.payDate.is_(None)).all()
+    search_trends = [] # db.session.query(SearchTrend).order_by(SearchTrend.count.desc()).limit(5).all()
     
     return render_template('admin_dashboard.html', 
                            active_listings=active_listings, 
@@ -122,9 +127,9 @@ def search():
 
     if filters:
         listings_query = listings_query.filter(and_(*filters))
-    
+
     listings_query = listings_query.filter(HouseListing.payDate != None)
-    
+
     # Sorting logic
     if sort_by == "low_price":
         listings_query = listings_query.order_by(HouseListing.price.asc())  # Sort by price ascending
@@ -134,7 +139,13 @@ def search():
         listings_query = listings_query.order_by(HouseListing.id.desc())  # Sort by most recent (assuming ID increases over time)
 
     listings = listings_query.paginate(page=page, per_page=LISTINGS_PER_PAGE)
-    
+
+    # Track search trends
+    if query:
+        search_trend = SearchTrend(query=query, count=1)
+        db.session.add(search_trend)
+        db.session.commit()
+
     return render_template('search.html', listings=listings, query=query, sort_by=sort_by)
 
 @app.route('/listing/<int:id>')
