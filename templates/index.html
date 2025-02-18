@@ -6,11 +6,11 @@
     <a href="{{ url_for('search') }}" class="cta-button">Find Your Dream Home</a>
 </div>
 
-<div class="row">
+<div class="row"> 
     {% for house in listings.items %}
     <div class="col-md-4 mb-4">
         <div class="card">
-            <img src="{{ house.image_url }}" class="card-img-top" alt="{{ house.title }}">
+            <img src="{% if house.images and house.images|length > 0 %}{{ house.images.0.filename }}{% else %}/static/uploads/default.webp{% endif %}" class="card-img-top" alt="{{ house.title }}">
             <div class="card-body">
                 <h5 class="card-title">{{ house.title }}</h5>
                 <p class="card-text">
