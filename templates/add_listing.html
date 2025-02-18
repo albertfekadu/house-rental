@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Add New Listing</h1>
-<form method="POST" enctype="multipart/form-data">
+<form class="mb-4" method="POST" enctype="multipart/form-data">
     <div class="form-group">
         <label for="title">Title</label>
         <input type="text" class="form-control" id="title" name="title" required>
@@ -31,6 +31,16 @@
         <label for="images">Images</label>
         <input type="file" class="form-control-file" id="images" name="images" multiple>
     </div>
+    <hr/>
+    <div class="form-group">
+        <h4>Payment Information</h4>
+        <p>Please make a payment of 500 birr to the following CBE account: 1000XXXXXXXX and upload screenshot of transfer below.</p>
+        <label for="screenshot">Upload a screenshot of your payment</label>
+        <input 
+        required
+        type="file" class="form-control-file" id="screenshot" name="screenshot">
+    </div>
+    <hr/>
     <button type="submit" class="btn btn-primary">Add Listing</button>
 </form>
 {% endblock %}

@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv  # Import load_dotenv
 from sqlalchemy import or_, and_
+from datetime import datetime
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -52,8 +53,15 @@ class HouseListing(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     contact = db.Column(db.String(100))
     images = db.relationship('Image', backref='house_listing', lazy=True)
+    screenshot = db.relationship('Screenshot', backref='house_listing', lazy=True)
+    payDate = db.Column(db.String, nullable=True)
 
 class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(200), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey('house_listing.id'), nullable=False)
+    
+class Screenshot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(200), nullable=False)
     listing_id = db.Column(db.Integer, db.ForeignKey('house_listing.id'), nullable=False)
@@ -70,7 +78,7 @@ def load_user(user_id):
 @app.route('/')
 def home():
     page = request.args.get('page', 1, type=int)
-    listings = HouseListing.query.paginate(page=page, per_page=LISTINGS_PER_PAGE)
+    listings = HouseListing.query.filter(HouseListing.payDate != None).paginate(page=page, per_page=LISTINGS_PER_PAGE)
     return render_template('index.html', listings=listings)
 
 @app.route("/admin_dashboard", methods=['GET'])
@@ -84,11 +92,14 @@ def admin_dashboard():
     active_listings = HouseListing.query.count()
     revenue = db.session.query(db.func.sum(HouseListing.price)).scalar() or 0.0
     search_trends = []  # Assuming you have a model to track search trends
-
+    unapproved_listings = HouseListing.query.filter(HouseListing.payDate.is_(None)).all()
+    
     return render_template('admin_dashboard.html', 
                            active_listings=active_listings, 
                            revenue=revenue, 
-                           search_trends=search_trends)
+                           search_trends=search_trends,
+                           unapproved_listings=unapproved_listings 
+                           )
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -111,7 +122,9 @@ def search():
 
     if filters:
         listings_query = listings_query.filter(and_(*filters))
-
+    
+    listings_query = listings_query.filter(HouseListing.payDate != None)
+    
     # Sorting logic
     if sort_by == "low_price":
         listings_query = listings_query.order_by(HouseListing.price.asc())  # Sort by price ascending
@@ -181,7 +194,15 @@ def add_listing():
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 image_urls.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
+                
+        # Handle ScreenShot upload
+        screenshot = request.files.get('screenshot')
+        screenshot_url = None
+        if screenshot and allowed_file(screenshot.filename):
+            screenshot_filename = secure_filename(screenshot.filename)
+            screenshot.save(os.path.join(app.config['UPLOAD_FOLDER'], screenshot_filename))
+            screenshot_url = os.path.join(app.config['UPLOAD_FOLDER'], screenshot_filename)
+        
         try:
             price = float(price)
             number_of_rooms = int(number_of_rooms)
@@ -202,6 +223,10 @@ def add_listing():
         for image_url in image_urls:
             image = Image(filename=image_url, house_listing=new_listing)
             db.session.add(image)
+            
+        if screenshot_url:
+            screenshot = Screenshot(filename=screenshot_url, house_listing=new_listing)
+            db.session.add(screenshot)
 
         db.session.add(new_listing)
         db.session.commit()
@@ -260,11 +285,27 @@ def delete_listing(listing_id):
             flash(f"Error deleting image file: {e}", 'error')
         db.session.delete(image)
         
+    # Delete screenshot associated with the listing
+    if listing.screenshot:
+        try:
+            os.remove(listing.screenshot[0].filename)
+        except OSError as e:
+            flash(f"Error deleting screenshot file: {e}", 'error')
+        db.session.delete(listing.screenshot[0])
+        
     db.session.delete(listing)
     db.session.commit()
     flash('Listing deleted successfully!', 'success')
     return redirect(url_for('home'))
 
+@app.route('/approve_listing/<int:listing_id>')
+@login_required
+def approve_listing(listing_id):
+    listing = HouseListing.query.get_or_404(listing_id)
+    listing.payDate = datetime.now()
+    db.session.commit()
+    flash('Listing approved successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/add_to_wishlist/<int:listing_id>')
 @login_required
