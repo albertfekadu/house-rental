@@ -116,6 +116,8 @@ def search():
     query = request.args.get('query', '', type=str)
     sort_by = request.args.get('sort_by', 'newest', type=str)  # Default: newest first
     page = request.args.get('page', 1, type=int)
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
 
     filters = []
 
@@ -127,6 +129,12 @@ def search():
             HouseListing.amenities.like(search_filter),
             HouseListing.contact.like(search_filter)
         ))
+
+    if min_price:
+        filters.append(HouseListing.price >= min_price)
+
+    if max_price:
+        filters.append(HouseListing.price <= max_price)
 
     listings_query = HouseListing.query
 
@@ -289,7 +297,7 @@ def edit_listing(id):
 @login_required
 def delete_listing(listing_id):
     listing = HouseListing.query.get_or_404(listing_id)
-    if listing.user_id != current_user.id:
+    if listing.user_id != current_user.id and current_user.role != 'admin':
         flash('You are not authorized to delete this listing.', 'error')
         return redirect(url_for('home'))
     
