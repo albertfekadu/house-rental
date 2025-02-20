@@ -77,6 +77,13 @@ class SearchTrend(db.Model):
     query = db.Column(db.String(100), nullable=False)
     count = db.Column(db.Integer, nullable=False)
     
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey('house_listing.id'), nullable=False)
+    review_text = db.Column(db.String(200), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -390,6 +397,28 @@ def compare():
         flash('No listings found.', 'error')
         return redirect(url_for('home'))
     return render_template('compare.html', listings=listings)
+
+
+@app.route("/submit_review/<int:listing_id>", methods=['POST'])
+@login_required
+def submit_review(listing_id):
+    review_text = request.form.get('review_text')
+    rating = request.form.get('rating')
+    # Check if the user has already reviewed the listing
+    existing_review = Review.query.filter_by(user_id=current_user.id, listing_id=listing_id).first()
+    if existing_review:
+        flash('You have already reviewed this listing.', 'error')
+        return redirect(url_for('listing', id=listing_id))
+    new_review = Review(
+        user_id=current_user.id,
+        listing_id=listing_id,
+        review_text=review_text,
+        rating=rating
+    )
+    db.session.add(new_review)
+    db.session.commit()
+    flash('Review submitted successfully!', 'success')
+    return redirect(url_for('listing', id=listing_id))
 
 if __name__ == '__main__':
     with app.app_context():

@@ -86,7 +86,10 @@ By default, the app runs in debug mode on [http://127.0.0.1:5000](http://127.0.0
 - Add listings to your wishlist via the “Wishlist” button on the homepage or listing page.
 - Access and manage your wishlist through the navbar.
 
-### 3.9 Additional Features
+### 3.9 Review and Rating
+- Add a rating and review to a listing
+
+### 3.10 Additional Features
 - **Pagination:** Available on the homepage and search pages.
 - **Search Trends:** Records each search query for analysis.
 - **File Uploads:** Uploaded images and screenshots are stored in `static/uploads`.
