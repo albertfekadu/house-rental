@@ -19,7 +19,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-UPLOAD_FOLDER = 'static/uploads'  # Create a folder named 'uploads' in the 'static' directory
+UPLOAD_FOLDER = 'static/uploads'  
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
