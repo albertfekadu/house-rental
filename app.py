@@ -102,7 +102,7 @@ def admin_dashboard():
     active_listings = HouseListing.query.filter(HouseListing.payDate != None).count()
     revenue = active_listings * 500  # Assuming each listing costs 500 birr
     unapproved_listings = HouseListing.query.filter(HouseListing.payDate.is_(None)).all()
-    search_trends = [] # db.session.query(SearchTrend).order_by(SearchTrend.count.desc()).limit(5).all()
+    search_trends =  db.session.query(SearchTrend).order_by(SearchTrend.count.desc()).limit(5).all()
     
     return render_template('admin_dashboard.html', 
                            active_listings=active_listings, 
@@ -155,7 +155,11 @@ def search():
 
     # Track search trends
     if query:
-        search_trend = SearchTrend(query=query, count=1)
+        search_trend = db.session.query(SearchTrend).filter_by(query=query).first()
+        if search_trend:
+            search_trend.count += 1
+        else:
+            search_trend = SearchTrend(query=query, count=1)
         db.session.add(search_trend)
         db.session.commit()
 

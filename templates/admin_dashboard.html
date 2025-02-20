@@ -32,19 +32,19 @@
         </div>
 
         <!-- Search Trends Table -->
-        <h3>Recent Searches</h3>
+        <h3>Top Recent Searches</h3>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Timestamp</th>
-                    <th>Filters</th>
+                    <th>Query</th>
+                    <th>Count</th>
                 </tr>
             </thead>
             <tbody>
                 {% for search in search_trends %}
                 <tr>
-                    <td>{{ search.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td>{{ search.filters }}</td>
+                    <td>{{ search.query }}</td>
+                    <td>{{ search.count }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
