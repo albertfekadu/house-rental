@@ -1,13 +1,18 @@
-
 {% extends "base.html" %}
 
 {% block content %}
 <h1>My Wishlist</h1>
+<form id="wishlistCompareForm">
 <div class="row">
     {% for house in listings %}
     <div class="col-md-4 mb-4">
         <div class="card">
-            <img src="{{ house.image_url }}" class="card-img-top" alt="{{ house.title }}">
+            {% if house.images and house.images|length > 0 %}
+              <!-- Remove "static/" prefix when generating the URL -->
+              <img src="{{ url_for('static', filename=house.images.0.filename[7:]) }}" class="card-img-top" alt="{{ house.title }}">
+            {% else %}
+              <img src="{{ url_for('static', filename='uploads/default.webp') }}" class="card-img-top" alt="{{ house.title }}">
+            {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ house.title }}</h5>
                 <p class="card-text">
@@ -19,9 +24,36 @@
                 <a href="{{ url_for('remove_from_wishlist', listing_id=house.id) }}" class="btn btn-danger">
                     Remove from Wishlist
                 </a>
+                <!-- Checkbox for comparison -->
+                <div class="form-check mt-2">
+                    <input class="form-check-input wishlist-compare-checkbox" type="checkbox" value="{{ house.id }}">
+                    <label class="form-check-label">Compare</label>
+                </div>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
+<!-- Compare button -->
+<div class="text-center mb-4">
+    <button type="button" class="btn btn-warning" onclick="submitWishlistCompare()">Compare Selected</button>
+</div>
+</form>
+
+<script>
+function submitWishlistCompare(){
+    const checkboxes = document.querySelectorAll('.wishlist-compare-checkbox:checked');
+    let ids = [];
+    checkboxes.forEach(function(checkbox){
+        ids.push(checkbox.value);
+    });
+    if(ids.length < 2){
+        alert("Please select at least two listings to compare.");
+        return;
+    }
+    // Redirect with ids as comma separated list.
+    const compareUrl = "{{ url_for('compare') }}?ids=" + ids.join(",");
+    window.location.href = compareUrl;
+}
+</script>
 {% endblock %}

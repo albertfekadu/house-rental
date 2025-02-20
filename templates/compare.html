@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Compare Listings</h1>
+{% if listings %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Feature</th>
+            {% for house in listings %}
+            <th>{{ house.title }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Price (Birr)</td>
+            {% for house in listings %}
+            <td>{{ house.price }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Location</td>
+            {% for house in listings %}
+            <td>{{ house.location }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Number of Rooms</td>
+            {% for house in listings %}
+            <td>{{ house.number_of_rooms }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Amenities</td>
+            {% for house in listings %}
+            <td>{{ house.amenities or 'N/A' }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Contact</td>
+            {% for house in listings %}
+            <td>{{ house.contact }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Image</td>
+            {% for house in listings %}
+            <td>
+                {% if house.images and house.images|length > 0 %}
+                   <img src="{{ house.images.0.filename }}" alt="{{ house.title }}" style="max-width:100px;">
+                {% else %}
+                   <img src="{{ url_for('static', filename='uploads/default.webp') }}" alt="{{ house.title }}" style="max-width:100px;">
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% else %}
+<p>No listings selected for comparison.</p>
+{% endif %}
+{% endblock %}

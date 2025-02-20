@@ -6,6 +6,7 @@
     <a href="{{ url_for('search') }}" class="cta-button">Find Your Dream Home</a>
 </div>
 
+<form id="compareForm" method="GET" action="{{ url_for('compare') }}">
 <div class="row"> 
     {% for house in listings.items %}
     <div class="col-md-4 mb-4">
@@ -22,11 +23,21 @@
                 <a href="{{ url_for('add_to_wishlist', listing_id=house.id) }}" class="btn btn-outline-info">
                     <i class="far fa-heart"></i> Wishlist
                 </a>
+                <!-- Checkbox for comparison -->
+                <div class="form-check mt-2">
+                    <input class="form-check-input compare-checkbox" type="checkbox" value="{{ house.id }}">
+                    <label class="form-check-label">Compare</label>
+                </div>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
+<!-- Compare button -->
+<div class="text-center mb-4">
+    <button type="button" class="btn btn-warning" onclick="submitCompare()">Compare Selected</button>
+</div>
+</form>
 
 <!-- Pagination -->
 <nav aria-label="Page navigation">
@@ -70,5 +81,22 @@
         {% endif %}
     </ul>
 </nav>
+
+<script>
+function submitCompare(){
+    const checkboxes = document.querySelectorAll('.compare-checkbox:checked');
+    let ids = [];
+    checkboxes.forEach(function(checkbox){
+        ids.push(checkbox.value);
+    });
+    if(ids.length < 2){
+        alert("Please select at least two listings to compare.");
+        return;
+    }
+    // Redirect with ids as comma separated list.
+    const compareUrl = "{{ url_for('compare') }}?ids=" + ids.join(",");
+    window.location.href = compareUrl;
+}
+</script>
 {% endblock %}
 
