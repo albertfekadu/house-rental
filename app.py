@@ -254,7 +254,7 @@ def add_listing():
 @login_required
 def edit_listing(id):
     listing = HouseListing.query.get_or_404(id)
-    if listing.user_id != current_user.id:
+    if listing.user_id != current_user.id and current_user.role != 'admin':
         flash('You are not authorized to edit this listing.', 'error')
         return redirect(url_for('home'))
     
