@@ -372,6 +372,25 @@ def wishlist():
     listings = [HouseListing.query.get(item.listing_id) for item in wishlist_items]
     return render_template('wishlist.html', listings=listings)
 
+@app.route('/compare')
+def compare():
+    ids = request.args.get('ids', '')
+    if not ids:
+        flash('No listings selected for comparison.', 'error')
+        return redirect(url_for('home'))
+    # Split comma separated ids and convert to int
+    try:
+        id_list = [int(i) for i in ids.split(',') if i]
+    except ValueError:
+        flash('Invalid listing ids.', 'error')
+        return redirect(url_for('home'))
+    # Fetch listings by id
+    listings = HouseListing.query.filter(HouseListing.id.in_(id_list)).all()
+    if not listings:
+        flash('No listings found.', 'error')
+        return redirect(url_for('home'))
+    return render_template('compare.html', listings=listings)
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
