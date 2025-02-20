@@ -230,6 +230,9 @@ def add_listing():
             screenshot_filename = secure_filename(screenshot.filename)
             screenshot.save(os.path.join(app.config['UPLOAD_FOLDER'], screenshot_filename))
             screenshot_url = os.path.join(app.config['UPLOAD_FOLDER'], screenshot_filename)
+        elif current_user.role != 'admin':
+            flash('Invalid screenshot file format. Please upload a valid file.', 'error')
+            return render_template('add_listing.html')
         
         try:
             price = float(price)
@@ -255,6 +258,10 @@ def add_listing():
         if screenshot_url:
             screenshot = Screenshot(filename=screenshot_url, house_listing=new_listing)
             db.session.add(screenshot)
+
+
+        if current_user.role == 'admin':
+            new_listing.payDate = datetime.now()
 
         db.session.add(new_listing)
         db.session.commit()
