@@ -46,18 +46,18 @@ python app.py
 By default, the app runs in debug mode on [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ### 3. Code structure
-
+```
 house-rental/
 │
-├── .env                        # Environment variables (not included in version control)
-├── .vscode/                    # VSCode workspace settings (optional)
+├── .env                       
+├── .vscode/                    
 │   └── settings.json
-├── houserentalenv/             # Virtual environment folder (optional)
-├── instance/                   # Contains instance-specific files (optional)
+├── houserentalenv/             
+├── instance/                   
 │   └── config.py
 ├── static/
 │   ├── css/
-│   │   └── style.css           # Custom CSS file
+│   │   └── style.css           # Custom Bootstrap CSS file
 │   ├── images/
 │   └── js/
 ├── uploads/                    # Stores uploaded images and screenshots
@@ -84,9 +84,10 @@ house-rental/
 ├── app.py                      # Main Flask application file, routes, and models
 ├── config.py                   # Configuration settings (e.g., database, secret key)
 ├── house_rental.db             # SQLite database (generated at runtime if not existing)
-├── package.json                # (If used for front-end dependencies or node scripts)
-├── requirements.txt            # Python dependencies
-└── PROJECT_TREE.md             # (Optional doc explaining the file structure)
+├── package.json              
+├── requirements.txt            
+└── PROJECT_TREE.md            
+```
 ## 4. User Guide
 
 ### 4.1 Registration and Login
