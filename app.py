@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv  # Import load_dotenv
 from sqlalchemy import or_, and_
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
 load_dotenv()  # Load environment variables from .env file
@@ -183,12 +184,19 @@ def register():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        
         user = User(username=username, email=email, role='user')
         user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-        flash('Registration successful. Please log in.', 'success')
-        return redirect(url_for('login'))
+        
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('Registration successful. Please log in.', 'success')
+            return redirect(url_for('login'))
+        except IntegrityError:
+            db.session.rollback()
+            flash('Username already exists. Please choose a different one.', 'error')
+            return render_template('register.html')
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
